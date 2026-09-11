@@ -1,6 +1,6 @@
 # Ubuntu SSH + Claude Code — persistent AI workstation for Railway
 
-[![Deploy on Railway](https://railway.com/button.svg)](https://railway.app/new?github_url=https://github.com/lNamelessl/ubuntu-ssh-claude-railway-template)
+[![Deploy on Railway](https://railway.com/button.svg)](https://railway.com/deploy/ubuntu-ssh-claude-workstation)
 
 A persistent Ubuntu 24.04 box on Railway you SSH into with **your own key**, with the
 **Claude Code CLI preinstalled**, and a **home volume** so your projects, tools, and Claude

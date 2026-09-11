@@ -96,9 +96,12 @@ fi
 #    (sshd sanitizes the environment), so present vars are written to a
 #    root-readable-only SetEnv include. All are optional: the box is
 #    SSH-reachable without any of them; Claude activates when one is present.
+#    NOTE: sshd honors a single SetEnv directive — all variables must share
+#    one line.
 # --------------------------------------------------------------------------
 : > "${ENV_CONF}"
 chmod 600 "${ENV_CONF}"
+setenv_line=""
 for v in ANTHROPIC_API_KEY ANTHROPIC_AUTH_TOKEN ANTHROPIC_BASE_URL CLAUDE_CODE_OAUTH_TOKEN; do
     val="$(printf '%s' "${!v:-}" | tr -d '\r\n' | xargs 2>/dev/null || true)"
     if [ -n "${val}" ]; then
@@ -107,13 +110,17 @@ for v in ANTHROPIC_API_KEY ANTHROPIC_AUTH_TOKEN ANTHROPIC_BASE_URL CLAUDE_CODE_O
                 log "WARNING: ${v} contains whitespace; skipping SetEnv injection"
                 ;;
             *)
-                printf 'SetEnv %s=%s\n' "${v}" "${val}" >> "${ENV_CONF}"
+                setenv_line="${setenv_line} ${v}=${val}"
                 log "will inject ${v} into SSH sessions"
                 ;;
         esac
     fi
 done
-[ -s "${ENV_CONF}" ] || log "no Claude auth variables set - SSH works; set ANTHROPIC_API_KEY later to activate Claude"
+if [ -n "${setenv_line}" ]; then
+    printf 'SetEnv%s\n' "${setenv_line}" >> "${ENV_CONF}"
+else
+    log "no Claude auth variables set - SSH works; set ANTHROPIC_API_KEY later to activate Claude"
+fi
 
 # --------------------------------------------------------------------------
 # 5. Run sshd in the foreground with a watchdog. If sshd dies or stops

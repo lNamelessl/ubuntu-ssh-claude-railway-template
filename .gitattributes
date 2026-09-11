@@ -1,0 +1,3 @@
+# Linux-only repo: force LF endings everywhere (CRLF breaks the entrypoint
+# shebang and sshd config parsing inside the container).
+* text=auto eol=lf

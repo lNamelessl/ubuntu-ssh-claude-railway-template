@@ -1,0 +1,16 @@
+____________________________________________________________________
+
+  Ubuntu SSH + Claude Code workstation (Railway)
+
+  * claude .......... Claude Code CLI (try: claude --version)
+  * ~/projects ...... your workspace
+  * persistence ..... everything under /home (this directory)
+                      survives redeploys and restarts
+  * auth ............ public key only; passwords are disabled
+  * sudo ............ available (this is your single-user box)
+
+  First time here? Run:  claude   and follow the login prompt,
+  or set ANTHROPIC_API_KEY as a Railway variable and redeploy.
+
+____________________________________________________________________
+

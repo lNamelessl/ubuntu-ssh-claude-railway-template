@@ -1,0 +1,6 @@
+.env
+.env.*
+*.key
+id_*
+known_hosts*
+.mimosa/

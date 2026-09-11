@@ -49,9 +49,11 @@ RUN npm install -g @anthropic-ai/claude-code@${CLAUDE_CODE_VERSION} \
     && npm cache clean --force \
     && claude --version
 
-# Non-root login user. Password locked ('*'): no password exists to brute-force;
+# Non-root login user (frees uid 1000 by removing the base image's default
+# `ubuntu` user first). Password locked ('*'): no password exists to brute-force;
 # authentication is possible only via authorized_keys.
-RUN useradd --uid 1000 --create-home --shell /bin/bash dev \
+RUN if id -u 1000 >/dev/null 2>&1; then userdel --remove "$(id -nu 1000)"; fi \
+    && useradd --uid 1000 --create-home --shell /bin/bash dev \
     && usermod -p '*' dev \
     && echo 'dev ALL=(ALL) NOPASSWD:ALL' > /etc/sudoers.d/dev \
     && chmod 440 /etc/sudoers.d/dev

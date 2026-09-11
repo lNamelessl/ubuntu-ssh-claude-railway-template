@@ -102,7 +102,7 @@ fi
 : > "${ENV_CONF}"
 chmod 600 "${ENV_CONF}"
 setenv_line=""
-for v in ANTHROPIC_API_KEY ANTHROPIC_AUTH_TOKEN ANTHROPIC_BASE_URL CLAUDE_CODE_OAUTH_TOKEN; do
+for v in ANTHROPIC_API_KEY ANTHROPIC_AUTH_TOKEN ANTHROPIC_BASE_URL CLAUDE_CODE_OAUTH_TOKEN ANTHROPIC_MODEL ANTHROPIC_SMALL_FAST_MODEL; do
     val="$(printf '%s' "${!v:-}" | tr -d '\r\n' | xargs 2>/dev/null || true)"
     if [ -n "${val}" ]; then
         case "${val}" in

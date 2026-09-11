@@ -39,6 +39,7 @@ sessions survive every redeploy.
 | `ANTHROPIC_API_KEY` | No | Anthropic API key (Console). Claude Code uses it automatically, no login prompt. |
 | `ANTHROPIC_AUTH_TOKEN` | No | Bearer token for LLM gateways — e.g. an OpenRouter key. |
 | `ANTHROPIC_BASE_URL` | No | Custom endpoint for the token above (e.g. OpenRouter). |
+| `ANTHROPIC_MODEL` | No | Model override — **required for free-tier OpenRouter keys** (set a `:free` slug). `ANTHROPIC_SMALL_FAST_MODEL` does the same for Claude Code's background calls (session titles, etc.). |
 | `CLAUDE_CODE_OAUTH_TOKEN` | No | Long-lived OAuth token from `claude setup-token` (Pro/Max subscription). |
 
 All variables are optional except `SSH_PUBLIC_KEY`, and all of them can be added or changed
@@ -53,9 +54,21 @@ image).
 
 1. **Anthropic API key** — set `ANTHROPIC_API_KEY=sk-ant-...` and redeploy. In headless
    mode (`claude -p "..."`) the key is used with no prompt.
-2. **OpenRouter** — set both:
+2. **OpenRouter** — set:
    - `ANTHROPIC_AUTH_TOKEN=sk-or-v1-...`
    - `ANTHROPIC_BASE_URL=https://openrouter.ai/api` (OpenRouter's Anthropic-compatible endpoint)
+   - `ANTHROPIC_MODEL=<slug>` — strongly recommended; see the free-tier note below. Set
+     `ANTHROPIC_SMALL_FAST_MODEL` to the same slug to route background calls (session
+     titles, etc.) to the same place.
+
+   **Free-tier OpenRouter keys** (under $10 lifetime credits) hit a hard cap: prompts are
+   limited to 8k tokens on paid models, and Claude Code's system prompt alone is ~18k — so
+   requests fail with `402 Prompt tokens limit exceeded`. Free models (`:free` slugs) bypass
+   that cap entirely: set `ANTHROPIC_MODEL` to a free general-purpose slug, e.g.
+   `nvidia/nemotron-3.5-lightning:free` (1M context). Free slugs get withdrawn and added
+   over time — pick a current one from [openrouter.ai/models](https://openrouter.ai/models)
+   or `GET https://openrouter.ai/api/v1/models`. Expect roughly 50 requests/day per key on
+   the free tier.
 3. **Claude subscription (Pro/Max/Team)** — on your own machine run `claude setup-token`,
    copy the printed token, set `CLAUDE_CODE_OAUTH_TOKEN=<token>` here, redeploy.
 4. **Interactive login** — just run `claude` over SSH and follow the URL (copy it into a local
@@ -114,6 +127,8 @@ for throwaway tooling, keep durable work in your home.
 | Variable rejected as invalid | Keys must be one key per line, starting with `ssh-ed25519`, `ssh-rsa`, `ecdsa-sha2-...`, or `sk-...`, followed by the base64 blob. Re-copy from `cat ~/.ssh/id_ed25519.pub`. |
 | Can't find where to connect | Service → **Settings → Networking → TCP Proxy** — you need the **port** too; SSH runs on a high port (`ssh -p NNNNN`), not 22 externally. |
 | `claude` returns 401 / invalid API key | Check which auth var is set (`/status` inside claude shows the active auth). For OpenRouter both `ANTHROPIC_AUTH_TOKEN` **and** `ANTHROPIC_BASE_URL` must be set. `/logout` clears stale interactive credentials. |
+| `402 Prompt tokens limit exceeded` | Free-tier OpenRouter key (under $10 credits) on a **paid** model — free-tier keys cap prompts at 8k tokens, below Claude Code's ~18k system prompt. Set `ANTHROPIC_MODEL` to a `:free` slug (see [Giving Claude Code credentials](#giving-claude-code-credentials)). |
+| `unrecognized_model` / model-catalog warning at startup | Benign. Claude Code doesn't recognize the third-party model id, assumes a 200k context window, and works anyway. |
 | Host key warning after redeploy | You likely deleted the volume, or connected to a different project's proxy. `ssh-keygen -R "[host]:port"` clears the old entry. |
 | Files gone after redeploy | They were outside `/home/dev`. Keep durable work in your home directory. |
 

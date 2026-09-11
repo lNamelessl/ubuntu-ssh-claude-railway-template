@@ -52,6 +52,6 @@ Hosting this template runs one service: an Ubuntu 24.04 container with OpenSSH a
 ### Deployment Dependencies
 
 - **An SSH public key** — the only required input. Provide `SSH_PUBLIC_KEY` (contents of your `~/.ssh/id_ed25519.pub`) on the deploy form. Without it the service boots in safe mode with SSH disabled until you add one.
-- **A Claude Code credential (optional at deploy time)** — activate Claude later by setting any one of: `ANTHROPIC_API_KEY` (Anthropic Console), `ANTHROPIC_AUTH_TOKEN` + `ANTHROPIC_BASE_URL` (e.g. OpenRouter), or `CLAUDE_CODE_OAUTH_TOKEN` (from `claude setup-token`). Usage is billed by your provider.
+- **A Claude Code credential (optional at deploy time)** — activate Claude later by setting any one of: `ANTHROPIC_API_KEY` (Anthropic Console), `ANTHROPIC_AUTH_TOKEN` + `ANTHROPIC_BASE_URL` (e.g. OpenRouter), or `CLAUDE_CODE_OAUTH_TOKEN` (from `claude setup-token`). Usage is billed by your provider. On OpenRouter's free tier, also set `ANTHROPIC_MODEL` to a `:free` model slug — free models bypass the 8k prompt-token cap that otherwise blocks Claude Code's ~18k system prompt.
 - **An SSH client** — any OpenSSH client works: `ssh -p PORT dev@HOST` with the matching private key.
 - No other services, databases, or credentials are required — the template is fully self-contained.
